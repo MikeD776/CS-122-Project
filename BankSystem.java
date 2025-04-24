@@ -60,11 +60,11 @@ public class BankSystem {
                     break;
                 }
                 else{
-                    System.out.println("PLEASE ENTER ONE OF THE CHOICES!!!\n");
+                    System.out.println("\nPLEASE ENTER ONE OF THE CHOICES!!!\n");
                 }
             }
             catch(InputMismatchException e){
-                System.out.println("PLEASE ENTER ONE OF THE CHOICES!!!\n");
+                System.out.println("\nPLEASE ENTER ONE OF THE CHOICES!!!\n");
             }
         }
 
