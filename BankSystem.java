@@ -1,19 +1,50 @@
+import java.nio.file.attribute.AclFileAttributeView;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class BankSystem {
 
-    public class account{
-        public String username;
-        public String password;
+    public static class account{
+        private String username;
+        private String password;
+        private double balance;
         
         public account(String username, String password){
             this.username = username;
             this.password = password;
+            this.balance = 0.0;
+        }
+        
+        public String getUsername(){
+            return username;
+        }
+        public String getPassword(){
+            return password;
+        }
+        public double gatBalance(){
+            return balance;
         }
 
+        public void deposit(double amount){
+            if(amount> 0){
+                balance +=amount;
+            }
+        }
+        public boolean withdraw(double amount){
+            if(amount > 0 && amount<= balance){
+                balance-= amount;
+                return true;
+            }
+            return false;
+        }
+        public boolean transfer( double amount){
+           return false; 
+        }
     }
-    
+   
+    ArrayList<account> accounts = new ArrayList<>();
+
     public static void main(String[] args) {
         while(true){
             System.out.println("WELCOME TO YOUR BANK SYSTEM");
@@ -35,9 +66,9 @@ public class BankSystem {
                     //Add other things if you feel like is a good idea
                     while(true){
                         System.out.println("Login: ");
-                        System.out.print("Enter username: ");
+                        System.out.print("Enter your username: ");
                         String usernameLogin = scnr.next();
-                        System.out.print("Enter your password:");
+                        System.out.print("Enter your password: ");
                         String passwordLogin = scnr.next();
                     }
                 }
@@ -50,9 +81,33 @@ public class BankSystem {
                     while(true){
                         System.out.print("Enter new Username: ");
                         String username = scnr.next();
+                        
                         System.out.print("Enter new Password: ");
                         String password = scnr.next();
-                        break;
+                        Boolean digit = false;
+                        Boolean letter = false;
+                        Boolean spChar = false;
+                        
+                        for(int i = 0; i < password.length(); i++){
+                            char character = password.charAt(i);
+                            System.out.println(character);
+                            if (Character.isDigit(character)){
+                                digit = true;
+                            }
+                            else if(Character.isLetter(character)){
+                                letter = true;
+                            }
+                            else if(character == '!'){
+                                spChar = true;
+                            }
+                        }
+                        if(digit && letter && spChar){
+                            System.out.println("Succesfully created password!!");
+                            break;
+                        }
+                        else{
+                            System.out.println("Password is not complicated enough");
+                        }
                     }
                 }
                 if(choice ==3){
