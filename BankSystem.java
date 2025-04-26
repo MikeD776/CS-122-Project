@@ -1,4 +1,3 @@
-import java.nio.file.attribute.AclFileAttributeView;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -38,12 +37,17 @@ public class BankSystem {
             }
             return false;
         }
-        public boolean transfer( double amount){
+        public boolean transfer(double amount){
            return false; 
+        }
+
+        @Override
+        public String toString(){
+            return "Username: " + username + ", Balance: $ " + balance + password;
         }
     }
    
-    ArrayList<account> accounts = new ArrayList<>();
+    static ArrayList<account> accounts = new ArrayList<>();
 
     public static void main(String[] args) {
         while(true){
@@ -73,49 +77,52 @@ public class BankSystem {
                     }
                 }
                 if(choice == 2){
-                    //In here we only need to create an account that needs username and password(maybe we can add other things like email or something like that)
-                    //We should create a class for this like we been doing
-                    //I was thinking of a type of validation of passwords(the user needs a strong password that have at least 10 characters, a number and a special character)
-                    // I remember we have already done this so we can check previous assignments for it
-                    // When the user is created it should break and return to the first page so it can login
                     while(true){
-                        System.out.print("Enter new Username: ");
+                        System.out.println("Enter new Username: ");
                         String username = scnr.next();
-                        
-                        System.out.print("Enter new Password: ");
+                        System.out.println("Enter new Password: ");
+                        System.out.println("Password must be at least 10 characters long, have a number, have a letter, and have a special character (.!@#$%^&*?)");
                         String password = scnr.next();
+
                         Boolean digit = false;
                         Boolean letter = false;
+                        Boolean length = false;
                         Boolean spChar = false;
+                        String specialChars = ".!@#$%^&*?";
                         
                         for(int i = 0; i < password.length(); i++){
                             char character = password.charAt(i);
-                            System.out.println(character);
                             if (Character.isDigit(character)){
                                 digit = true;
                             }
-                            else if(Character.isLetter(character)){
+                            if(Character.isLetter(character)){
                                 letter = true;
                             }
-                            else if(character == '!'){
+                            if(specialChars.contains(String.valueOf(character))){
                                 spChar = true;
                             }
+                            if(password.length() >= 10){
+                                length = true;
+                            }
                         }
-                        if(digit && letter && spChar){
+                        if(digit && letter && spChar && length){
                             System.out.println("Succesfully created password!!");
+                            account acc1 = new account(username, password);
+                            accounts.add(acc1);
                             break;
                         }
                         else{
                             System.out.println("Password is not complicated enough");
                         }
                     }
+                    continue;
                 }
                 if(choice ==3){
-                    System.out.println("Thank you for using our bank system");
+                    System.out.println("\nThank you for using our bank system");
                     break;
                 }
                 else{
-                    System.out.println("\nPLEASE ENTER ONE OF THE CHOICES!!!\n");
+                    System.out.println("\nPLEASE ENTER ONE OF THE CHOICES!!! (1,2,3)\n");
                 }
             }
             catch(InputMismatchException e){
