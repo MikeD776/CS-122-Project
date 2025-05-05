@@ -8,11 +8,13 @@ public class BankSystem {
         private String username;
         private String password;
         private double balance;
+        private ArrayList<String> transactionHistory; // added transaction history
 
         public account(String username, String password) {
             this.username = username;
             this.password = password;
             this.balance = 0.0;
+            this.transactionHistory = new ArrayList<>(); // initializes transaction history
         }
 
         public String getUsername() {
@@ -30,15 +32,32 @@ public class BankSystem {
         public void deposit(double amount) {
             if (amount > 0) {
                 balance += amount;
+                transactionHistory.add("Deposited: $" + amount); // log deposit
             }
         }
 
         public boolean withdraw(double amount) {
             if (amount > 0 && amount <= balance) {
                 balance -= amount;
+                transactionHistory.add("Withdrew: $" + amount); // log withdrawal
                 return true;
             }
             return false;
+        }
+
+        public void addTransfer(String message) {
+            transactionHistory.add(message); // log transfer
+        }
+
+        public void viewTransactionHistory() {
+            if (transactionHistory.isEmpty()) {
+                System.out.println("No transactions found.");
+            } else {
+                System.out.println("Transaction History:");
+                for (String transaction : transactionHistory) {
+                    System.out.println(transaction);
+                }
+            }
         }
 
         @Override
@@ -75,7 +94,6 @@ public class BankSystem {
         }
     }
 
-    
     public static void displayMainMenu() {
         System.out.println("WELCOME TO YOUR BANK SYSTEM");
         System.out.println();
@@ -84,7 +102,6 @@ public class BankSystem {
         System.out.println("For closing the system type 3");
     }
 
-    
     public static void handleLogin(Scanner scnr) {
         System.out.println("Login: ");
         System.out.print("Enter your username: ");
@@ -103,13 +120,11 @@ public class BankSystem {
         handleAccountMenu(scnr, loggedIn);
     }
 
-    
     public static void handleAccountCreation(Scanner scnr) {
         while (true) {
             System.out.println("Enter new Username: ");
             String username = scnr.next();
 
-            // Check if the username already exists
             if (findAccountByUsername(username) != null) {
                 System.out.println("Username already exists. Please choose a different username.");
                 continue;
@@ -130,7 +145,6 @@ public class BankSystem {
         }
     }
 
-    
     public static void handleAccountMenu(Scanner scnr, account loggedIn) {
         while (true) {
             System.out.println("\nAccount Menu:");
@@ -138,7 +152,8 @@ public class BankSystem {
             System.out.println("2. Deposit");
             System.out.println("3. Withdraw");
             System.out.println("4. Transfer");
-            System.out.println("5. Logout");
+            System.out.println("5. View Transaction History"); // New option
+            System.out.println("6. Logout"); // Changed logout to 6
             System.out.print("Choice: ");
 
             int action = scnr.nextInt();
@@ -172,11 +187,15 @@ public class BankSystem {
                 double amount = scnr.nextDouble();
                 if (loggedIn.withdraw(amount)) {
                     recipient.deposit(amount);
+                    loggedIn.addTransfer("Transferred $" + amount + " to " + recipient.getUsername());
+                    recipient.addTransfer("Received $" + amount + " from " + loggedIn.getUsername());
                     System.out.println("Transfer successful!");
                 } else {
                     System.out.println("Insufficient balance for transfer.");
                 }
             } else if (action == 5) {
+                loggedIn.viewTransactionHistory(); // View transaction history
+            } else if (action == 6) {
                 System.out.println("Logging out...");
                 break;
             } else {
@@ -207,7 +226,6 @@ public class BankSystem {
         return digit && letter && spChar && length;
     }
 
-    
     public static account findAccountByUsername(String username) {
         for (account acc : accounts) {
             if (acc.getUsername().equals(username)) {
