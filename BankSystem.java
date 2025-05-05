@@ -68,14 +68,90 @@ public class BankSystem {
                     //We nee in the while loop logic for money withdraws, deposits, and transactions between accounts
                     //For those we need to check if they have enough money and if there are other accounts(for the last one)
                     //Add other things if you feel like is a good idea
-                    while(true){
+                    while(true){ 
                         System.out.println("Login: ");
                         System.out.print("Enter your username: ");
                         String usernameLogin = scnr.next();
                         System.out.print("Enter your password: ");
                         String passwordLogin = scnr.next();
+                        
+                        boolean found = false;
+                        account loggedIn = null;
+
+                        for (account acc : accounts) {
+                            if(acc.getUsername().equals(usernameLogin) && acc.getPassword().equals(passwordLogin)) {
+                                found = true;
+                                loggedIn = acc; 
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            System.out.println("Invalid username or password! Returning to main menu.");
+                            continue;
+                        }
+                        System.out.println("Login successful! Welcome, " + loggedIn.getUsername());
+
+                        while(true) {
+                            System.out.println("\nAccount Menu:");
+                            System.out.println("1. Check Balance");
+                            System.out.println("2. Deposit");
+                            System.out.println("3. Withdraw");
+                            System.out.println("4. Transfer");
+                            System.out.println("5. Logout");
+                            System.out.println("Choice: ");
+
+                            int action = scnr.nextInt();
+
+                            if(action == 1) {
+                                System.out.printf("Balance: $%.2f\n", loggedIn.gatBalance());
+                            } else if (action == 2) {
+                                System.out.print("Enter deposit amount: ");
+                                double amount = scnr.nextDouble();
+                                loggedIn.deposit(amount);
+                                System.out.println("Deposit successful!");
+                            } else if (action == 3) {
+                                System.out.print("Enter withdrawal amount: ");
+                                double amount = scnr.nextDouble();
+                                if (loggedIn.withdraw(amount)) {
+                                    System.out.println("Withdrawal successful!");
+                                } else {
+                                    System.out.println("Insufficient balacne.");
+                                }
+                            } else if (action == 4) {
+                                System.out.print("Enter recipient username: ");
+                                String recipientName = scnr.next();
+                                account recipient = null;
+                                for (account acc : accounts) {
+                                    if (acc.getUsername().equals(recipientName)) {
+                                        recipient = acc;
+                                        break;
+                                    }
+                                }
+                                if (recipient == null || recipient == loggedIn) {
+                                    System.out.println("Invalid recipient.");
+                                    continue;
+                                }
+
+                                System.out.print("Enter amount to transfer: ");
+                                double amount = scnr.nextDouble();
+                                if (loggedIn.withdraw(amount)) {
+                                    recipient.deposit(amount);
+                                    System.out.println("Transfer successful!");
+                                } else {
+                                    System.out.println("Insufficient balance for transfer.");
+                                }
+                            } else if (action == 5) {
+                                System.out.println("Logging out...");
+                                break;
+                            } else {
+                                System.out.println("Invalid option. Try again.");
+                            }
+                        }
+                        break;
                     }
                 }
+
+
                 if(choice == 2){
                     while(true){
                         System.out.println("Enter new Username: ");
@@ -128,7 +204,8 @@ public class BankSystem {
             catch(InputMismatchException e){
                 System.out.println("\nPLEASE ENTER ONE OF THE CHOICES!!!\n");
             }
+            
         }
-
     }
+    
 }
