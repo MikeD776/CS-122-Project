@@ -152,8 +152,9 @@ public class BankSystem {
             System.out.println("2. Deposit");
             System.out.println("3. Withdraw");
             System.out.println("4. Transfer");
-            System.out.println("5. View Transaction History"); // New option
-            System.out.println("6. Logout"); // Changed logout to 6
+            System.out.println("5. View Transaction History");
+            System.out.println("6. Delete Account"); // New option for account deletion
+            System.out.println("7. Logout"); // Changed logout to 7
             System.out.print("Choice: ");
 
             int action = scnr.nextInt();
@@ -194,8 +195,18 @@ public class BankSystem {
                     System.out.println("Insufficient balance for transfer.");
                 }
             } else if (action == 5) {
-                loggedIn.viewTransactionHistory(); // View transaction history
+                loggedIn.viewTransactionHistory();
             } else if (action == 6) {
+                System.out.print("Are you sure you want to delete your account? Type 'yes' to confirm: ");
+                String confirmation = scnr.next();
+                if (confirmation.equalsIgnoreCase("yes")) {
+                    accounts.remove(loggedIn); // Remove the account from the list
+                    System.out.println("Your account has been deleted. Logging out...");
+                    break; // Exit the account menu
+                } else {
+                    System.out.println("Account deletion canceled.");
+                }
+            } else if (action == 7) {
                 System.out.println("Logging out...");
                 break;
             } else {
