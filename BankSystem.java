@@ -9,12 +9,16 @@ public class BankSystem {
         private String password;
         private double balance;
         private ArrayList<String> transactionHistory; // added transaction history
+        private int failedLoginAttempts; // track failed login attempts
+        private boolean isLocked; // track if the account is locked
 
         public account(String username, String password) {
             this.username = username;
             this.password = password;
             this.balance = 0.0;
             this.transactionHistory = new ArrayList<>(); // initializes transaction history
+            this.failedLoginAttempts = 0; // failed attempts to 0
+            this.isLocked = false; // initializes account as unlocked
         }
 
         public String getUsername() {
@@ -27,6 +31,26 @@ public class BankSystem {
 
         public double gatBalance() {
             return balance;
+        }
+
+        public boolean isLocked() {
+            return isLocked;
+        }
+
+        public void incrementFailedLoginAttempts() {
+            failedLoginAttempts++;
+            if (failedLoginAttempts >= 3) { // lock account after 3 failed attempts
+                isLocked = true;
+            }
+        }
+
+        public void resetFailedLoginAttempts() {
+            failedLoginAttempts = 0;
+        }
+
+        public void unlockAccount() {
+            isLocked = false;
+            resetFailedLoginAttempts();
         }
 
         public void deposit(double amount) {
@@ -111,11 +135,28 @@ public class BankSystem {
 
         account loggedIn = findAccountByUsername(usernameLogin);
 
-        if (loggedIn == null || !loggedIn.getPassword().equals(passwordLogin)) {
-            System.out.println("Invalid username or password! Returning to main menu.");
+        if (loggedIn == null) {
+            System.out.println("Invalid username! Returning to main menu.");
             return;
         }
 
+        if (loggedIn.isLocked()) {
+            System.out.println("This account is locked due to too many failed login attempts. Please contact an admin to unlock it.");
+            return;
+        }
+
+        if (!loggedIn.getPassword().equals(passwordLogin)) {
+            loggedIn.incrementFailedLoginAttempts();
+            int attemptsLeft = 3 - loggedIn.failedLoginAttempts; // Calculate remaining attempts
+            if (loggedIn.isLocked()) {
+                System.out.println("Your account has been locked due to too many failed login attempts.");
+            } else {
+                System.out.println("Invalid password! You have " + attemptsLeft + " attempt(s) left.");
+            }
+            return;
+        }
+
+        loggedIn.resetFailedLoginAttempts(); // Reset failed attempts on successful login
         System.out.println("Login successful! Welcome, " + loggedIn.getUsername());
         handleAccountMenu(scnr, loggedIn);
     }
@@ -153,8 +194,8 @@ public class BankSystem {
             System.out.println("3. Withdraw");
             System.out.println("4. Transfer");
             System.out.println("5. View Transaction History");
-            System.out.println("6. Delete Account"); // New option for account deletion
-            System.out.println("7. Logout"); // Changed logout to 7
+            System.out.println("6. Delete Account"); // new option for account deletion
+            System.out.println("7. Logout"); // changed logout to 7
             System.out.print("Choice: ");
 
             int action = scnr.nextInt();
@@ -200,9 +241,9 @@ public class BankSystem {
                 System.out.print("Are you sure you want to delete your account? Type 'yes' to confirm: ");
                 String confirmation = scnr.next();
                 if (confirmation.equalsIgnoreCase("yes")) {
-                    accounts.remove(loggedIn); // Remove the account from the list
+                    accounts.remove(loggedIn); // remove the account from the list
                     System.out.println("Your account has been deleted. Logging out...");
-                    break; // Exit the account menu
+                    break; // exit the account menu
                 } else {
                     System.out.println("Account deletion canceled.");
                 }
