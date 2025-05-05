@@ -70,7 +70,7 @@ public class BankSystem {
                 }
             } catch (InputMismatchException e) {
                 System.out.println("\nPLEASE ENTER ONE OF THE CHOICES!!!\n");
-                scnr.next(); 
+                scnr.next();
             }
         }
     }
@@ -108,6 +108,13 @@ public class BankSystem {
         while (true) {
             System.out.println("Enter new Username: ");
             String username = scnr.next();
+
+            // Check if the username already exists
+            if (findAccountByUsername(username) != null) {
+                System.out.println("Username already exists. Please choose a different username.");
+                continue;
+            }
+
             System.out.println("Enter new Password: ");
             System.out.println("Password must be at least 10 characters long, have a number, have a letter, and have a special character (.!@#$%^&*?)");
             String password = scnr.next();
