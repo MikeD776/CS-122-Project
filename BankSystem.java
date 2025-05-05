@@ -106,10 +106,12 @@ public class BankSystem {
                 } else if (choice == 2) {
                     handleAccountCreation(scnr);
                 } else if (choice == 3) {
+                    handleAdminLogin(scnr); //admin mode
+                } else if (choice == 4) {
                     System.out.println("\nThank you for using our bank system");
                     break;
                 } else {
-                    System.out.println("\nPLEASE ENTER ONE OF THE CHOICES!!! (1,2,3)\n");
+                    System.out.println("\nPLEASE ENTER ONE OF THE CHOICES!!! (1,2,3,4)\n");
                 }
             } catch (InputMismatchException e) {
                 System.out.println("\nPLEASE ENTER ONE OF THE CHOICES!!!\n");
@@ -121,9 +123,10 @@ public class BankSystem {
     public static void displayMainMenu() {
         System.out.println("WELCOME TO YOUR BANK SYSTEM");
         System.out.println();
-        System.out.println("For login type 1");
-        System.out.println("For creating an account type 2");
-        System.out.println("For closing the system type 3");
+        System.out.println("1. Login");
+        System.out.println("2. Create an Account");
+        System.out.println("3. Admin Login");
+        System.out.println("4. Exit");
     }
 
     public static void handleLogin(Scanner scnr) {
@@ -147,7 +150,7 @@ public class BankSystem {
 
         if (!loggedIn.getPassword().equals(passwordLogin)) {
             loggedIn.incrementFailedLoginAttempts();
-            int attemptsLeft = 3 - loggedIn.failedLoginAttempts; // Calculate remaining attempts
+            int attemptsLeft = 3 - loggedIn.failedLoginAttempts; // calculates remaining attempts
             if (loggedIn.isLocked()) {
                 System.out.println("Your account has been locked due to too many failed login attempts.");
             } else {
@@ -285,5 +288,87 @@ public class BankSystem {
             }
         }
         return null;
+    }
+
+    public static void handleAdminLogin(Scanner scnr) {
+        System.out.println("Admin Login:");
+        System.out.print("Enter admin username: ");
+        String adminUsername = scnr.next();
+        System.out.print("Enter admin password: ");
+        String adminPassword = scnr.next();
+
+        // Hardcoded admin credentials
+        if (adminUsername.equals("admin") && adminPassword.equals("admin123")) {
+            System.out.println("Admin login successful!");
+            handleAdminMenu(scnr);
+        } else {
+            System.out.println("Invalid admin credentials! Returning to main menu.");
+        }
+    }
+// admin user: admin
+// admin pass: admin123
+    public static void handleAdminMenu(Scanner scnr) {
+        while (true) {
+            System.out.println("\nAdmin Menu:");
+            System.out.println("1. View All Accounts");
+            System.out.println("2. Unlock an Account");
+            System.out.println("3. Delete an Account");
+            System.out.println("4. Logout");
+            System.out.print("Choice: ");
+
+            int choice = scnr.nextInt();
+
+            if (choice == 1) {
+                viewAllAccounts();
+            } else if (choice == 2) {
+                unlockAccount(scnr);
+            } else if (choice == 3) {
+                deleteAccount(scnr);
+            } else if (choice == 4) {
+                System.out.println("Logging out of admin mode...");
+                break;
+            } else {
+                System.out.println("Invalid option. Try again.");
+            }
+        }
+    }
+
+    public static void viewAllAccounts() {
+        System.out.println("\nAll Accounts:");
+        if (accounts.isEmpty()) {
+            System.out.println("No accounts found.");
+        } else {
+            for (account acc : accounts) {
+                System.out.println(acc);
+            }
+        }
+    }
+
+    public static void unlockAccount(Scanner scnr) {
+        System.out.print("Enter the username of the account to unlock: ");
+        String username = scnr.next();
+        account acc = findAccountByUsername(username);
+
+        if (acc == null) {
+            System.out.println("Account not found.");
+        } else if (!acc.isLocked()) {
+            System.out.println("Account is not locked.");
+        } else {
+            acc.unlockAccount();
+            System.out.println("Account unlocked successfully.");
+        }
+    }
+
+    public static void deleteAccount(Scanner scnr) {
+        System.out.print("Enter the username of the account to delete: ");
+        String username = scnr.next();
+        account acc = findAccountByUsername(username);
+
+        if (acc == null) {
+            System.out.println("Account not found.");
+        } else {
+            accounts.remove(acc);
+            System.out.println("Account deleted successfully.");
+        }
     }
 }
