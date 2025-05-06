@@ -319,7 +319,8 @@ public class BankSystem {
             System.out.println("1. View All Accounts");
             System.out.println("2. Unlock an Account");
             System.out.println("3. Delete an Account");
-            System.out.println("4. Logout");
+            System.out.println("4. Display Top Balances");
+            System.out.println("5. Logout");
             System.out.print("Choice: ");
 
             int choice = scnr.nextInt();
@@ -331,6 +332,10 @@ public class BankSystem {
             } else if (choice == 3) {
                 deleteAccount(scnr);
             } else if (choice == 4) {
+                System.out.print("Enter the number of top accounts to display: ");
+                int n = scnr.nextInt();
+                displayTopBalances(n);
+            } else if (choice == 5) {
                 System.out.println("Logging out of admin mode...");
                 break;
             } else {
@@ -375,6 +380,25 @@ public class BankSystem {
         } else {
             accounts.remove(acc);
             System.out.println("Account deleted successfully.");
+        }
+    }
+
+    public static void displayTopBalances(int n) {
+        if (accounts.isEmpty()) {
+            System.out.println("No accounts available.");
+            return;
+        }
+
+        // creates an array of accounts to sort
+        account[] accountArray = accounts.toArray(new account[0]);
+
+        // sort the array by balance in descending order
+        java.util.Arrays.sort(accountArray, (a, b) -> Double.compare(b.gatBalance(), a.gatBalance()));
+
+        // display the top # accounts
+        System.out.println("Top " + n + " Accounts by Balance:");
+        for (int i = 0; i < Math.min(n, accountArray.length); i++) {
+            System.out.println((i + 1) + ". " + accountArray[i].getUsername() + " - $" + accountArray[i].gatBalance());
         }
     }
 }
