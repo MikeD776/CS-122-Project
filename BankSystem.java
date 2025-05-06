@@ -4,21 +4,13 @@ import java.util.Scanner;
 
 public class BankSystem {
 
-    public static class account {
-        private String username;
-        private String password;
-        private double balance;
-        private ArrayList<String> transactionHistory; // added transaction history
-        private int failedLoginAttempts; // track failed login attempts
-        private boolean isLocked; // track if the account is locked
+    public static class User {
+        protected String username;
+        protected String password;
 
-        public account(String username, String password) {
+        public User(String username, String password) {
             this.username = username;
             this.password = password;
-            this.balance = 0.0;
-            this.transactionHistory = new ArrayList<>(); // initializes transaction history
-            this.failedLoginAttempts = 0; // failed attempts to 0
-            this.isLocked = false; // initializes account as unlocked
         }
 
         public String getUsername() {
@@ -27,6 +19,21 @@ public class BankSystem {
 
         public String getPassword() {
             return password;
+        }
+    }
+
+    public static class account extends User {
+        private double balance;
+        private ArrayList<String> transactionHistory;
+        private int failedLoginAttempts; // Track failed login attempts
+        private boolean isLocked; // Track if the account is locked
+
+        public account(String username, String password) {
+            super(username, password); // Call the constructor of the User class
+            this.balance = 0.0;
+            this.transactionHistory = new ArrayList<>();
+            this.failedLoginAttempts = 0;
+            this.isLocked = false;
         }
 
         public double gatBalance() {
@@ -39,7 +46,7 @@ public class BankSystem {
 
         public void incrementFailedLoginAttempts() {
             failedLoginAttempts++;
-            if (failedLoginAttempts >= 3) { // lock account after 3 failed attempts
+            if (failedLoginAttempts >= 3) {
                 isLocked = true;
             }
         }
@@ -56,21 +63,21 @@ public class BankSystem {
         public void deposit(double amount) {
             if (amount > 0) {
                 balance += amount;
-                transactionHistory.add("Deposited: $" + amount); // log deposit
+                transactionHistory.add("Deposited: $" + amount);
             }
         }
 
         public boolean withdraw(double amount) {
             if (amount > 0 && amount <= balance) {
                 balance -= amount;
-                transactionHistory.add("Withdrew: $" + amount); // log withdrawal
+                transactionHistory.add("Withdrew: $" + amount);
                 return true;
             }
             return false;
         }
 
         public void addTransfer(String message) {
-            transactionHistory.add(message); // log transfer
+            transactionHistory.add(message);
         }
 
         public void viewTransactionHistory() {
@@ -106,7 +113,7 @@ public class BankSystem {
                 } else if (choice == 2) {
                     handleAccountCreation(scnr);
                 } else if (choice == 3) {
-                    handleAdminLogin(scnr); //admin mode
+                    handleAdminLogin(scnr); // Admin mode
                 } else if (choice == 4) {
                     System.out.println("\nThank you for using our bank system");
                     break;
@@ -150,7 +157,7 @@ public class BankSystem {
 
         if (!loggedIn.getPassword().equals(passwordLogin)) {
             loggedIn.incrementFailedLoginAttempts();
-            int attemptsLeft = 3 - loggedIn.failedLoginAttempts; // calculates remaining attempts
+            int attemptsLeft = 3 - loggedIn.failedLoginAttempts; // Calculate remaining attempts
             if (loggedIn.isLocked()) {
                 System.out.println("Your account has been locked due to too many failed login attempts.");
             } else {
@@ -197,8 +204,8 @@ public class BankSystem {
             System.out.println("3. Withdraw");
             System.out.println("4. Transfer");
             System.out.println("5. View Transaction History");
-            System.out.println("6. Delete Account"); // new option for account deletion
-            System.out.println("7. Logout"); // changed logout to 7
+            System.out.println("6. Delete Account");
+            System.out.println("7. Logout");
             System.out.print("Choice: ");
 
             int action = scnr.nextInt();
@@ -244,9 +251,9 @@ public class BankSystem {
                 System.out.print("Are you sure you want to delete your account? Type 'yes' to confirm: ");
                 String confirmation = scnr.next();
                 if (confirmation.equalsIgnoreCase("yes")) {
-                    accounts.remove(loggedIn); // remove the account from the list
+                    accounts.remove(loggedIn); // Remove the account from the list
                     System.out.println("Your account has been deleted. Logging out...");
-                    break; // exit the account menu
+                    break; // Exit the account menu
                 } else {
                     System.out.println("Account deletion canceled.");
                 }
@@ -305,8 +312,7 @@ public class BankSystem {
             System.out.println("Invalid admin credentials! Returning to main menu.");
         }
     }
-// admin user: admin
-// admin pass: admin123
+
     public static void handleAdminMenu(Scanner scnr) {
         while (true) {
             System.out.println("\nAdmin Menu:");
