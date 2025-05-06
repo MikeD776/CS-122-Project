@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 public class BankSystem {
 
+    // user class to store common fields like username and password
     public static class User {
         protected String username;
         protected String password;
@@ -22,14 +23,15 @@ public class BankSystem {
         }
     }
 
+    // account class extends user and adds fields like balance, transaction history, etc.
     public static class account extends User {
         private double balance;
-        private ArrayList<String> transactionHistory;
-        private int failedLoginAttempts; // Track failed login attempts
-        private boolean isLocked; // Track if the account is locked
+        private ArrayList<String> transactionHistory; // stores transaction logs
+        private int failedLoginAttempts; // tracks failed login attempts
+        private boolean isLocked; // indicates if the account is locked
 
         public account(String username, String password) {
-            super(username, password); // Call the constructor of the User class
+            super(username, password); // calls the constructor of the user class
             this.balance = 0.0;
             this.transactionHistory = new ArrayList<>();
             this.failedLoginAttempts = 0;
@@ -46,38 +48,38 @@ public class BankSystem {
 
         public void incrementFailedLoginAttempts() {
             failedLoginAttempts++;
-            if (failedLoginAttempts >= 3) {
+            if (failedLoginAttempts >= 3) { // locks the account after 3 failed attempts
                 isLocked = true;
             }
         }
 
         public void resetFailedLoginAttempts() {
-            failedLoginAttempts = 0;
+            failedLoginAttempts = 0; // resets failed login attempts
         }
 
         public void unlockAccount() {
-            isLocked = false;
+            isLocked = false; // unlocks the account
             resetFailedLoginAttempts();
         }
 
         public void deposit(double amount) {
             if (amount > 0) {
                 balance += amount;
-                transactionHistory.add("Deposited: $" + amount);
+                transactionHistory.add("Deposited: $" + amount); // logs the deposit
             }
         }
 
         public boolean withdraw(double amount) {
             if (amount > 0 && amount <= balance) {
                 balance -= amount;
-                transactionHistory.add("Withdrew: $" + amount);
+                transactionHistory.add("Withdrew: $" + amount); // logs the withdrawal
                 return true;
             }
             return false;
         }
 
         public void addTransfer(String message) {
-            transactionHistory.add(message);
+            transactionHistory.add(message); // logs a transfer
         }
 
         public void viewTransactionHistory() {
@@ -97,37 +99,38 @@ public class BankSystem {
         }
     }
 
-    static ArrayList<account> accounts = new ArrayList<>();
+    static ArrayList<account> accounts = new ArrayList<>(); // stores all accounts
 
     public static void main(String[] args) {
         Scanner scnr = new Scanner(System.in);
 
         while (true) {
-            displayMainMenu();
+            displayMainMenu(); // shows the main menu
             try {
                 System.out.print("Choice: ");
                 int choice = scnr.nextInt();
 
                 if (choice == 1) {
-                    handleLogin(scnr);
+                    handleLogin(scnr); // handles user login
                 } else if (choice == 2) {
-                    handleAccountCreation(scnr);
+                    handleAccountCreation(scnr); // handles account creation
                 } else if (choice == 3) {
-                    handleAdminLogin(scnr); // Admin mode
+                    handleAdminLogin(scnr); // handles admin login
                 } else if (choice == 4) {
                     System.out.println("\nThank you for using our bank system");
-                    break;
+                    break; // exits the program
                 } else {
                     System.out.println("\nPLEASE ENTER ONE OF THE CHOICES!!! (1,2,3,4)\n");
                 }
             } catch (InputMismatchException e) {
                 System.out.println("\nPLEASE ENTER ONE OF THE CHOICES!!!\n");
-                scnr.next();
+                scnr.next(); // clears invalid input
             }
         }
     }
 
     public static void displayMainMenu() {
+        // displays the main menu options
         System.out.println("WELCOME TO YOUR BANK SYSTEM");
         System.out.println();
         System.out.println("1. Login");
@@ -137,6 +140,7 @@ public class BankSystem {
     }
 
     public static void handleLogin(Scanner scnr) {
+        // handles user login
         System.out.println("Login: ");
         System.out.print("Enter your username: ");
         String usernameLogin = scnr.next();
@@ -157,7 +161,7 @@ public class BankSystem {
 
         if (!loggedIn.getPassword().equals(passwordLogin)) {
             loggedIn.incrementFailedLoginAttempts();
-            int attemptsLeft = 3 - loggedIn.failedLoginAttempts; // Calculate remaining attempts
+            int attemptsLeft = 3 - loggedIn.failedLoginAttempts; // calculates remaining attempts
             if (loggedIn.isLocked()) {
                 System.out.println("Your account has been locked due to too many failed login attempts.");
             } else {
@@ -166,12 +170,13 @@ public class BankSystem {
             return;
         }
 
-        loggedIn.resetFailedLoginAttempts(); // Reset failed attempts on successful login
+        loggedIn.resetFailedLoginAttempts(); // resets failed attempts on successful login
         System.out.println("Login successful! Welcome, " + loggedIn.getUsername());
-        handleAccountMenu(scnr, loggedIn);
+        handleAccountMenu(scnr, loggedIn); // opens the account menu
     }
 
     public static void handleAccountCreation(Scanner scnr) {
+        // handles account creation
         while (true) {
             System.out.println("Enter new Username: ");
             String username = scnr.next();
@@ -188,7 +193,7 @@ public class BankSystem {
             if (isPasswordComplex(password)) {
                 System.out.println("Successfully created password!!");
                 account acc1 = new account(username, password);
-                accounts.add(acc1);
+                accounts.add(acc1); // adds the new account to the list
                 break;
             } else {
                 System.out.println("Password is not complicated enough");
@@ -197,6 +202,7 @@ public class BankSystem {
     }
 
     public static void handleAccountMenu(Scanner scnr, account loggedIn) {
+        // handles the account menu for logged-in users
         while (true) {
             System.out.println("\nAccount Menu:");
             System.out.println("1. Check Balance");
@@ -215,12 +221,12 @@ public class BankSystem {
             } else if (action == 2) {
                 System.out.print("Enter deposit amount: ");
                 double amount = scnr.nextDouble();
-                loggedIn.deposit(amount);
+                loggedIn.deposit(amount); // deposits money
                 System.out.println("Deposit successful!");
             } else if (action == 3) {
                 System.out.print("Enter withdrawal amount: ");
                 double amount = scnr.nextDouble();
-                if (loggedIn.withdraw(amount)) {
+                if (loggedIn.withdraw(amount)) { // withdraws money
                     System.out.println("Withdrawal successful!");
                 } else {
                     System.out.println("Insufficient balance.");
@@ -237,7 +243,7 @@ public class BankSystem {
 
                 System.out.print("Enter amount to transfer: ");
                 double amount = scnr.nextDouble();
-                if (loggedIn.withdraw(amount)) {
+                if (loggedIn.withdraw(amount)) { // transfers money
                     recipient.deposit(amount);
                     loggedIn.addTransfer("Transferred $" + amount + " to " + recipient.getUsername());
                     recipient.addTransfer("Received $" + amount + " from " + loggedIn.getUsername());
@@ -246,14 +252,14 @@ public class BankSystem {
                     System.out.println("Insufficient balance for transfer.");
                 }
             } else if (action == 5) {
-                loggedIn.viewTransactionHistory();
+                loggedIn.viewTransactionHistory(); // views transaction history
             } else if (action == 6) {
                 System.out.print("Are you sure you want to delete your account? Type 'yes' to confirm: ");
                 String confirmation = scnr.next();
                 if (confirmation.equalsIgnoreCase("yes")) {
-                    accounts.remove(loggedIn); // Remove the account from the list
+                    accounts.remove(loggedIn); // deletes the account
                     System.out.println("Your account has been deleted. Logging out...");
-                    break; // Exit the account menu
+                    break;
                 } else {
                     System.out.println("Account deletion canceled.");
                 }
@@ -267,6 +273,7 @@ public class BankSystem {
     }
 
     public static boolean isPasswordComplex(String password) {
+        // checks if the password meets complexity requirements
         boolean digit = false;
         boolean letter = false;
         boolean length = password.length() >= 10;
@@ -289,6 +296,7 @@ public class BankSystem {
     }
 
     public static account findAccountByUsername(String username) {
+        // finds an account by username
         for (account acc : accounts) {
             if (acc.getUsername().equals(username)) {
                 return acc;
@@ -298,22 +306,24 @@ public class BankSystem {
     }
 
     public static void handleAdminLogin(Scanner scnr) {
+        // handles admin login
         System.out.println("Admin Login:");
         System.out.print("Enter admin username: ");
         String adminUsername = scnr.next();
         System.out.print("Enter admin password: ");
         String adminPassword = scnr.next();
 
-        // Hardcoded admin credentials
+        // hardcoded admin credentials
         if (adminUsername.equals("admin") && adminPassword.equals("admin123")) {
             System.out.println("Admin login successful!");
-            handleAdminMenu(scnr);
+            handleAdminMenu(scnr); // opens the admin menu
         } else {
             System.out.println("Invalid admin credentials! Returning to main menu.");
         }
     }
 
     public static void handleAdminMenu(Scanner scnr) {
+        // handles the admin menu
         while (true) {
             System.out.println("\nAdmin Menu:");
             System.out.println("1. View All Accounts");
@@ -326,15 +336,15 @@ public class BankSystem {
             int choice = scnr.nextInt();
 
             if (choice == 1) {
-                viewAllAccounts();
+                viewAllAccounts(); // views all accounts
             } else if (choice == 2) {
-                unlockAccount(scnr);
+                unlockAccount(scnr); // unlocks an account
             } else if (choice == 3) {
-                deleteAccount(scnr);
+                deleteAccount(scnr); // deletes an account
             } else if (choice == 4) {
                 System.out.print("Enter the number of top accounts to display: ");
                 int n = scnr.nextInt();
-                displayTopBalances(n);
+                displayTopBalances(n); // displays top balances
             } else if (choice == 5) {
                 System.out.println("Logging out of admin mode...");
                 break;
@@ -345,6 +355,7 @@ public class BankSystem {
     }
 
     public static void viewAllAccounts() {
+        // displays all accounts
         System.out.println("\nAll Accounts:");
         if (accounts.isEmpty()) {
             System.out.println("No accounts found.");
@@ -356,6 +367,7 @@ public class BankSystem {
     }
 
     public static void unlockAccount(Scanner scnr) {
+        // unlocks a locked account
         System.out.print("Enter the username of the account to unlock: ");
         String username = scnr.next();
         account acc = findAccountByUsername(username);
@@ -371,6 +383,7 @@ public class BankSystem {
     }
 
     public static void deleteAccount(Scanner scnr) {
+        // deletes an account
         System.out.print("Enter the username of the account to delete: ");
         String username = scnr.next();
         account acc = findAccountByUsername(username);
@@ -384,6 +397,7 @@ public class BankSystem {
     }
 
     public static void displayTopBalances(int n) {
+        // displays the top n accounts by balance
         if (accounts.isEmpty()) {
             System.out.println("No accounts available.");
             return;
@@ -392,10 +406,10 @@ public class BankSystem {
         // creates an array of accounts to sort
         account[] accountArray = accounts.toArray(new account[0]);
 
-        // sort the array by balance in descending order
+        // sorts the array by balance in descending order
         java.util.Arrays.sort(accountArray, (a, b) -> Double.compare(b.gatBalance(), a.gatBalance()));
 
-        // display the top # accounts
+        // displays the top n accounts
         System.out.println("Top " + n + " Accounts by Balance:");
         for (int i = 0; i < Math.min(n, accountArray.length); i++) {
             System.out.println((i + 1) + ". " + accountArray[i].getUsername() + " - $" + accountArray[i].gatBalance());
